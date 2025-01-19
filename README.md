@@ -44,7 +44,7 @@ This Flutter app demonstrates:
 
 ## Repository  
 
-Find the full project here: [GitHub Repo](https://github.com/your-username/flutter-developer-assignment).  
+Find the full project here: [GitHub Repo](https://github.com/Emmanuel-Whings/assignment.git)).  
 
 ## Contact  
 
