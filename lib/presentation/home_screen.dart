@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           BlocBuilder<DataBloc, DataState>(builder: (context, state) {
             return IconButton(
-              onPressed: state.runtimeType != AvailableState ? null : () {},
+              onPressed: state is! AvailableState ? null : () {},
               style: IconButton.styleFrom(
                   foregroundColor: Colors.white,
                   disabledForegroundColor: Colors.white.withOpacity(0.5)),
@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body:
           BlocBuilder<DataBloc, DataState>(builder: (context, DataState state) {
         switch (state.runtimeType) {
-          case const (LoadingState):
+          case LoadingState:
             return Center(
               child: CenterComponent(
                 children: [
@@ -61,50 +61,72 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             );
-          case const (ErrorState):
+          case ErrorState:
             return CustomRefreshIndicatorComponent(
-                callback: () async {
-                  context.read<DataBloc>().add(LoadEvent());
-                },
-                child: StatusIndicatorComponent(
-                  message: (state as ErrorState).message,
-                  icon: Icons.error,
-                ));
-          case const (EmptyState):
+              callback: () async {
+                context.read<DataBloc>().add(LoadEvent());
+              },
+              child: StatusIndicatorComponent(
+                message: (state as ErrorState).message,
+                icon: Icons.error,
+              ),
+            );
+          case EmptyState:
             return CustomRefreshIndicatorComponent(
-                callback: () async {
-                  context.read<DataBloc>().add(LoadEvent());
-                },
-                child: StatusIndicatorComponent(
-                  message: (state as EmptyState).message,
-                  icon: Icons.inbox,
-                ));
-          case const (AvailableState):
+              callback: () async {
+                context.read<DataBloc>().add(LoadEvent());
+              },
+              child: StatusIndicatorComponent(
+                message: (state as EmptyState).message,
+                icon: Icons.inbox,
+              ),
+            );
+          case AvailableState:
             List<User> users = (state as AvailableState).data;
             return RefreshIndicator(
               onRefresh: () async {
                 context.read<DataBloc>().add(LoadEvent());
               },
               child: ListView.separated(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => ListTile(
-                        onTap: () =>
-                            context.go("/details", extra: users[index]),
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 12),
-                        leading: Icon(
-                          Icons.account_circle,
-                          size: 48,
-                          color: Theme.of(context).colorScheme.primary,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemBuilder: (context, index) => Card(
+                  elevation: 2,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: ListTile(
+                    onTap: () => context.go("/details", extra: users[index]),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    leading: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      child: Text(
+                        users[index].name[0].toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
-                        trailing: const Icon(Icons.chevron_right_rounded),
-                        title: Text(users[index].name),
-                        subtitle: Text(users[index].email),
                       ),
-                  separatorBuilder: (context, index) => const Divider(
-                        height: 1,
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    title: Text(
+                      users[index].name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-                  itemCount: users.length),
+                    ),
+                    subtitle: Text(
+                      users[index].email,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ),
+                separatorBuilder: (context, index) => const SizedBox(height: 1),
+                itemCount: users.length,
+              ),
             );
           default:
             return Container();
