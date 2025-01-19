@@ -18,7 +18,7 @@ This Flutter app demonstrates:
 
 1. Clone the repository:  
    ```bash  
-   git clone https://github.com/your-username/flutter-developer-assignment.git  
+   gh repo clone Emmanuel-Whings/assignment
    cd flutter-developer-assignment  
    ```  
 2. Install dependencies:  
